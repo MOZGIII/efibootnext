@@ -1,4 +1,4 @@
-use efinextboot::{load_options, set_boot_next};
+use efibootnext::{load_options, set_boot_next};
 
 fn main() -> Result<(), Box<std::error::Error>> {
     let mut manager = efivar::system();

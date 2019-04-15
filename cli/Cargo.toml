@@ -1,0 +1,14 @@
+[package]
+name = "efibootnext-cli"
+version = "0.1.0"
+authors = ["MOZGIII <mike-n@narod.ru>"]
+edition = "2018"
+
+[dependencies]
+
+[dependencies.efibootnext]
+path = "../efibootnext"
+
+[dependencies.efivar]
+git = "https://github.com/vtavernier/efiboot-rs.git"
+rev = "0b60910ac16ae1ffb4aadc46fcd37b605657162b"
