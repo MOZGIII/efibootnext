@@ -4,7 +4,12 @@ version = "0.1.0"
 authors = ["MOZGIII <mike-n@narod.ru>"]
 edition = "2018"
 
+[[bin]]
+name = "efibootnext"
+path = "src/main.rs"
+
 [dependencies]
+clap = "2.33"
 
 [dependencies.efibootnext]
 path = "../efibootnext"
