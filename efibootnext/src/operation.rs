@@ -16,7 +16,7 @@ fn formats_validly() {
     assert_eq!(format_load_option_name(16), "Boot0010");
 }
 
-pub fn load_option_by_num(
+pub fn get_load_option(
     var_manager: &mut efivar::VarManager,
     num: u16,
 ) -> Result<LoadOption, Error> {

@@ -1,4 +1,4 @@
-use crate::operation::load_option_by_num;
+use crate::operation::get_load_option;
 use crate::LoadOption;
 use crate::NoSuchLoadOption;
 use efivar;
@@ -14,7 +14,7 @@ impl<'a> Iterator for LoadOptionIter<'a> {
     type Item = Result<LoadOption, Error>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let load_option = match load_option_by_num(self.var_manager, self.current) {
+        let load_option = match get_load_option(self.var_manager, self.current) {
             Ok(load_option) => load_option,
             Err(err) => {
                 if let Some(NoSuchLoadOption { .. }) = err.downcast_ref() {
