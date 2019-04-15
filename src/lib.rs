@@ -14,3 +14,5 @@ pub use load_option_iter::LoadOptionIter;
 pub fn load_options(var_manager: &mut efivar::VarManager) -> LoadOptionIter {
     LoadOptionIter::new(var_manager)
 }
+
+pub use operation::set_boot_next;

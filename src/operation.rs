@@ -45,3 +45,16 @@ fn is_no_such_load_option_error(err: &std::io::Error) -> bool {
 fn is_no_such_load_option_error(err: &std::io::Error) -> bool {
     err.kind() == std::io::ErrorKind::Other && err.raw_os_error() == Some(203)
 }
+
+pub fn set_boot_next(var_manager: &mut efivar::VarManager, num: u16) -> Result<(), Error> {
+    let full_var_name = efivar::efi::to_fullname("BootNext");
+    use efivar::efi::VariableFlags;
+    let _ = var_manager.write(
+        &full_var_name,
+        VariableFlags::NON_VOLATILE
+            | VariableFlags::BOOTSERVICE_ACCESS
+            | VariableFlags::RUNTIME_ACCESS,
+        &num.to_ne_bytes(),
+    )?;
+    Ok(())
+}
