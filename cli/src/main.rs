@@ -7,7 +7,14 @@ use efibootnext::{load_options, set_boot_next};
 mod boot_next_format;
 use boot_next_format::BootNextFormat;
 
-fn main() -> Result<(), Box<std::error::Error>> {
+fn main() {
+    if let Err(err) = run() {
+        eprintln!("Error: {}", err);
+        std::process::exit(1);
+    }
+}
+
+fn run() -> Result<(), Box<std::error::Error>> {
     let mut manager = efivar::system();
     let default_boot_next_format: &str = &format!("{}", BootNextFormat::Hex);
 
