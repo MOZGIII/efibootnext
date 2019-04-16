@@ -10,8 +10,8 @@ failure_derive = "0.1"
 byteorder = "1.3"
 
 [dependencies.efivar]
-git = "https://github.com/vtavernier/efiboot-rs.git"
-rev = "0b60910ac16ae1ffb4aadc46fcd37b605657162b"
+git = "https://github.com/MOZGIII/efiboot-rs.git"
+rev = "551798e5486597879ffa7aff0e42712cf66c0012"
 
 [dependencies.efi-loadopt]
 git = "https://github.com/MOZGIII/efi-loadopt.git"
