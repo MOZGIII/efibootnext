@@ -1,6 +1,6 @@
+use crate::error::NoSuchLoadOption;
 use crate::operation::get_load_option;
 use crate::LoadOption;
-use crate::NoSuchLoadOption;
 use crate::Result;
 use efivar;
 use std::iter::Iterator;

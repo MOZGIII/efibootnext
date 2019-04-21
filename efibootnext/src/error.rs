@@ -9,3 +9,7 @@ impl NoSuchLoadOption {
         Self { number: number }
     }
 }
+
+#[derive(Debug, Fail)]
+#[fail(display = "boot next value is not valid")]
+pub struct InvalidBootNextValue;
