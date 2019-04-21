@@ -1,53 +1,52 @@
 use crate::operation::get_load_option;
 use crate::LoadOption;
 use crate::NoSuchLoadOption;
+use crate::Result;
 use efivar;
-use failure::Error;
 use std::iter::Iterator;
 
-pub struct LoadOptionIter<'a> {
+pub struct LoadOptionIter<'a, I>
+where
+    I: Iterator<Item = u16>,
+{
     var_manager: &'a mut dyn efivar::VarManager,
-    current: u16,
+    number_iter: I,
 }
 
-impl<'a> Iterator for LoadOptionIter<'a> {
-    type Item = Result<LoadOption, Error>;
+impl<'a, I> Iterator for LoadOptionIter<'a, I>
+where
+    I: Iterator<Item = u16>,
+{
+    type Item = Result<LoadOption>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        while self.current <= 0x9999 {
-            let load_option = match get_load_option(self.var_manager, self.current) {
-                Ok(load_option) => Some(Ok(load_option)),
+        loop {
+            let number = match self.number_iter.next() {
+                None => return None,
+                Some(number) => number,
+            };
+            match get_load_option(self.var_manager, number) {
+                Ok(load_option) => return Some(Ok(load_option)),
                 Err(err) => {
                     if let Some(NoSuchLoadOption { .. }) = err.downcast_ref() {
-                        None
+                        continue;
                     } else {
-                        Some(Err(err))
+                        return Some(Err(err));
                     }
                 }
             };
-
-            // Advance counter.
-            // We use a bit of heuristic here to try and go over the most
-            // popular load options.
-            self.current = match self.current {
-                0x20 => 0x9980,
-                _ => self.current + 1,
-            };
-
-            match load_option {
-                None => continue,
-                Some(val) => return Some(val),
-            }
         }
-        None
     }
 }
 
-impl<'a> LoadOptionIter<'a> {
-    pub fn new(var_manager: &'a mut dyn efivar::VarManager) -> Self {
+impl<'a, I> LoadOptionIter<'a, I>
+where
+    I: Iterator<Item = u16>,
+{
+    pub fn with_number_iter(var_manager: &'a mut dyn efivar::VarManager, number_iter: I) -> Self {
         Self {
             var_manager: var_manager,
-            current: 0,
+            number_iter: number_iter,
         }
     }
 }
