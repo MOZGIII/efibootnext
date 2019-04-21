@@ -21,21 +21,12 @@ fn get_var(
     var_manager: &mut efivar::VarManager,
     name: &str,
 ) -> Result<Option<(VariableFlags, Vec<u8>)>> {
+    use efivar::Error;
     match var_manager.read(name) {
         Ok(v) => Ok(Some(v)),
-        Err(ref err) if is_no_such_load_option_error(&err) => Ok(None),
+        Err(Error::VarNotFound { .. }) => Ok(None),
         Err(err) => Err(err)?,
     }
-}
-
-#[cfg(not(target_os = "windows"))]
-fn is_no_such_load_option_error(err: &std::io::Error) -> bool {
-    err.kind() == std::io::ErrorKind::NotFound
-}
-
-#[cfg(target_os = "windows")]
-fn is_no_such_load_option_error(err: &std::io::Error) -> bool {
-    err.kind() == std::io::ErrorKind::Other && err.raw_os_error() == Some(203)
 }
 
 pub fn get_load_option(var_manager: &mut efivar::VarManager, num: u16) -> Result<LoadOption> {
