@@ -8,11 +8,8 @@ edition = "2018"
 failure = "0.1"
 failure_derive = "0.1"
 byteorder = "1.3"
+efi-loadopt = "0.1"
 
 [dependencies.efivar]
 git = "https://github.com/MOZGIII/efiboot-rs.git"
 rev = "551798e5486597879ffa7aff0e42712cf66c0012"
-
-[dependencies.efi-loadopt]
-git = "https://github.com/MOZGIII/efi-loadopt.git"
-rev = "ca166c2b34c6a45f1e75738f15af95b2f12a6070"
