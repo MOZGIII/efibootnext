@@ -2,7 +2,7 @@
 extern crate clap;
 
 use clap::{App, AppSettings, Arg, SubCommand};
-use efibootnext::{load_options, set_boot_next};
+use efibootnext::{get_boot_next, load_options, set_boot_next};
 
 mod boot_next_format;
 use boot_next_format::BootNextFormat;
@@ -28,6 +28,9 @@ fn run() -> Result<(), Box<std::error::Error>> {
                 .about("Prints possbile boot options"),
         )
         .subcommand(
+            SubCommand::with_name("get").about("Prints the value of the BootNext EFI variable"),
+        )
+        .subcommand(
             SubCommand::with_name("set")
                 .about("Sets the BootNext EFI variable")
                 .arg(
@@ -51,6 +54,14 @@ fn run() -> Result<(), Box<std::error::Error>> {
             for load_option_result in load_options(manager.as_mut()) {
                 let load_option = load_option_result?;
                 println!("{:04X} {}", load_option.number, load_option.description);
+            }
+            Ok(())
+        }
+        ("get", _) => {
+            let boot_next = get_boot_next(manager.as_mut())?;
+            match boot_next {
+                None => println!("unset"),
+                Some(boot_next) => println!("{:04X}", boot_next),
             }
             Ok(())
         }
