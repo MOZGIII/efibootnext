@@ -4,6 +4,12 @@ version = "0.1.0"
 authors = ["MOZGIII <mike-n@narod.ru>"]
 edition = "2018"
 
+description = "A library for manipulating the BootNext UEFI variable and listing possible boot options"
+documentation = "https://docs.rs/efibootnext"
+repository = "https://github.com/MOZGIII/efibootnext.git"
+keywords = ["uefi", "efi"]
+license = "MIT"
+
 [dependencies]
 failure = "0.1"
 failure_derive = "0.1"

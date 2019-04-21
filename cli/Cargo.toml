@@ -4,6 +4,12 @@ version = "0.1.0"
 authors = ["MOZGIII <mike-n@narod.ru>"]
 edition = "2018"
 
+description = "A cli app for manipulating the BootNext UEFI variable and listing possible boot options"
+documentation = "https://docs.rs/efibootnext"
+repository = "https://github.com/MOZGIII/efibootnext.git"
+keywords = ["uefi", "efi"]
+license = "MIT"
+
 [[bin]]
 name = "efibootnext"
 path = "src/main.rs"
