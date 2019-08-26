@@ -25,4 +25,4 @@ git = "https://github.com/MOZGIII/efiboot-rs.git"
 rev = "9ab65ba399ad18770fbd755d5ec6f24a72d358a4"
 
 [build-dependencies]
-embed-resource = "1.2"
+embed-resource = "1.3"
