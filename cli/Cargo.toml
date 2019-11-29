@@ -20,4 +20,4 @@ efivar = "0.1"
 efibootnext = { path = "../efibootnext" }
 
 [build-dependencies]
-embed-resource = "1.2"
+embed-resource = "1.3"
