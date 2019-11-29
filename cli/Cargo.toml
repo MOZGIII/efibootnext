@@ -16,13 +16,8 @@ path = "src/main.rs"
 
 [dependencies]
 clap = "2.33"
-
-[dependencies.efibootnext]
-path = "../efibootnext"
-
-[dependencies.efivar]
-git = "https://github.com/MOZGIII/efiboot-rs.git"
-rev = "9ab65ba399ad18770fbd755d5ec6f24a72d358a4"
+efivar = "0.1"
+efibootnext = { path = "../efibootnext" }
 
 [build-dependencies]
 embed-resource = "1.2"

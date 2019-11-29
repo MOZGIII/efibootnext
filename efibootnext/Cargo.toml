@@ -15,7 +15,4 @@ failure = "0.1"
 failure_derive = "0.1"
 byteorder = "1.3"
 efi-loadopt = "0.1"
-
-[dependencies.efivar]
-git = "https://github.com/MOZGIII/efiboot-rs.git"
-rev = "9ab65ba399ad18770fbd755d5ec6f24a72d358a4"
+efivar = "0.1"
