@@ -82,7 +82,7 @@ dependencies = [
 
 [[package]]
 name = "efibootnext"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "byteorder 1.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "efi-loadopt 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -96,7 +96,7 @@ name = "efibootnext-cli"
 version = "0.1.0"
 dependencies = [
  "clap 2.33.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "efibootnext 0.1.0",
+ "efibootnext 0.1.1",
  "efivar 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "embed-resource 1.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
