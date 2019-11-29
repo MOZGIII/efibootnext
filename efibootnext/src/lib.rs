@@ -1,5 +1,4 @@
-#[macro_use]
-extern crate failure_derive;
+#![warn(rust_2018_idioms)]
 
 pub mod error;
 mod heuristics_load_option_number_iter;
@@ -16,7 +15,7 @@ pub use load_option::LoadOption;
 pub type Result<T> = std::result::Result<T, Error>;
 
 pub fn load_options<'a>(
-    var_manager: &'a mut efivar::VarManager,
+    var_manager: &'a mut dyn efivar::VarManager,
 ) -> impl Iterator<Item = Result<LoadOption>> + 'a {
     let number_iter = HeuristicsLoadOptionNumberIter::new();
     LoadOptionIter::with_number_iter(var_manager, number_iter)

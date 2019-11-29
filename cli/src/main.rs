@@ -1,7 +1,6 @@
-#[macro_use]
-extern crate clap;
+#![warn(rust_2018_idioms)]
 
-use clap::{App, AppSettings, Arg, SubCommand};
+use clap::{crate_version, value_t_or_exit, App, AppSettings, Arg, SubCommand};
 use efibootnext::{get_boot_next, load_options, set_boot_next};
 
 mod boot_next_format;
@@ -14,7 +13,7 @@ fn main() {
     }
 }
 
-fn run() -> Result<(), Box<std::error::Error>> {
+fn run() -> Result<(), Box<dyn std::error::Error>> {
     let mut manager = efivar::system();
     let default_boot_next_format: &str = &format!("{}", BootNextFormat::Hex);
 

@@ -18,7 +18,7 @@ fn formats_validly() {
 }
 
 fn get_var(
-    var_manager: &mut efivar::VarManager,
+    var_manager: &mut dyn efivar::VarManager,
     name: &str,
 ) -> Result<Option<(VariableFlags, Vec<u8>)>> {
     use efivar::Error;
@@ -29,7 +29,7 @@ fn get_var(
     }
 }
 
-pub fn get_load_option(var_manager: &mut efivar::VarManager, num: u16) -> Result<LoadOption> {
+pub fn get_load_option(var_manager: &mut dyn efivar::VarManager, num: u16) -> Result<LoadOption> {
     let var_name = format_load_option_name(num);
     let full_var_name = efivar::efi::to_fullname(&var_name);
     let (_flags, value) = match get_var(var_manager, &full_var_name) {
@@ -42,7 +42,7 @@ pub fn get_load_option(var_manager: &mut efivar::VarManager, num: u16) -> Result
     Ok(LoadOption::new(num, efiloadopt.description.to_owned()))
 }
 
-pub fn set_boot_next(var_manager: &mut efivar::VarManager, num: u16) -> Result<()> {
+pub fn set_boot_next(var_manager: &mut dyn efivar::VarManager, num: u16) -> Result<()> {
     let full_var_name = efivar::efi::to_fullname("BootNext");
     let _ = var_manager.write(
         &full_var_name,
@@ -54,7 +54,7 @@ pub fn set_boot_next(var_manager: &mut efivar::VarManager, num: u16) -> Result<(
     Ok(())
 }
 
-pub fn get_boot_next(var_manager: &mut efivar::VarManager) -> Result<Option<u16>> {
+pub fn get_boot_next(var_manager: &mut dyn efivar::VarManager) -> Result<Option<u16>> {
     let full_var_name = efivar::efi::to_fullname("BootNext");
     let (_flags, buf) = match get_var(var_manager, &full_var_name)? {
         None => return Ok(None),

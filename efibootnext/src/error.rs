@@ -1,3 +1,5 @@
+use failure_derive::Fail;
+
 #[derive(Debug, Fail)]
 #[fail(display = "load option with number {:04X} does not exist", number)]
 pub struct NoSuchLoadOption {
