@@ -16,7 +16,7 @@ path = "src/main.rs"
 
 [dependencies]
 clap = "2.33"
-efivar = "0.1"
+efivar = "0.2"
 efibootnext = { path = "../efibootnext" }
 
 [build-dependencies]
