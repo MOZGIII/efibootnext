@@ -12,6 +12,8 @@ use load_option_iter::LoadOptionIter;
 pub use failure::Error;
 pub use load_option::LoadOption;
 
+pub use efivar;
+
 pub type Result<T> = std::result::Result<T, Error>;
 
 pub fn load_options<'a>(
