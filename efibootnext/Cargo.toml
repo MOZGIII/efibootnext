@@ -15,7 +15,7 @@ failure = "0.1"
 failure_derive = "0.1"
 byteorder = "1.3"
 efi-loadopt = "0.1"
-efivar = "0.1"
+efivar = "0.2"
 
 [features]
 # We do not provide any interface stability guarantees to the implementation
