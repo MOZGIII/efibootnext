@@ -1,7 +1,7 @@
 #![warn(rust_2018_idioms)]
 
 use clap::{crate_version, value_t_or_exit, App, AppSettings, Arg, SubCommand};
-use efibootnext::{get_boot_next, load_options, set_boot_next};
+use efibootnext::Adapter;
 
 mod boot_next_format;
 use boot_next_format::BootNextFormat;
@@ -14,7 +14,7 @@ fn main() {
 }
 
 fn run() -> Result<(), Box<dyn std::error::Error>> {
-    let mut manager = efivar::system();
+    let mut adapter = Adapter::default();
     let default_boot_next_format: &str = &format!("{}", BootNextFormat::Hex);
 
     let matches = App::new("efibootnext")
@@ -50,14 +50,14 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
 
     match matches.subcommand() {
         ("list", _) => {
-            for load_option_result in load_options(manager.as_mut()) {
+            for load_option_result in adapter.load_options() {
                 let load_option = load_option_result?;
                 println!("{:04X} {}", load_option.number, load_option.description);
             }
             Ok(())
         }
         ("get", _) => {
-            let boot_next = get_boot_next(manager.as_mut())?;
+            let boot_next = adapter.get_boot_next()?;
             match boot_next {
                 None => println!("unset"),
                 Some(boot_next) => println!("{:04X}", boot_next),
@@ -70,7 +70,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 .parse_boot_next(submatches, "boot_next")
                 .unwrap_or_else(|e| e.exit());
 
-            let _ = set_boot_next(manager.as_mut(), boot_next)?;
+            let _ = adapter.set_boot_next(boot_next)?;
 
             println!("{:04X}", boot_next);
             Ok(())

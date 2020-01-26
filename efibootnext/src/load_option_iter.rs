@@ -1,15 +1,14 @@
 use crate::error::NoSuchLoadOption;
-use crate::operation::get_load_option;
+use crate::Adapter;
 use crate::LoadOption;
 use crate::Result;
-use efivar;
 use std::iter::Iterator;
 
 pub struct LoadOptionIter<'a, I>
 where
     I: Iterator<Item = u16>,
 {
-    var_manager: &'a mut dyn efivar::VarManager,
+    adapter: &'a mut Adapter,
     number_iter: I,
 }
 
@@ -25,7 +24,7 @@ where
                 None => return None,
                 Some(number) => number,
             };
-            match get_load_option(self.var_manager, number) {
+            match self.adapter.get_load_option(number) {
                 Ok(load_option) => return Some(Ok(load_option)),
                 Err(err) => {
                     if let Some(NoSuchLoadOption { .. }) = err.downcast_ref() {
@@ -43,9 +42,9 @@ impl<'a, I> LoadOptionIter<'a, I>
 where
     I: Iterator<Item = u16>,
 {
-    pub fn with_number_iter(var_manager: &'a mut dyn efivar::VarManager, number_iter: I) -> Self {
+    pub fn with_number_iter(adapter: &'a mut Adapter, number_iter: I) -> Self {
         Self {
-            var_manager: var_manager,
+            adapter: adapter,
             number_iter: number_iter,
         }
     }
