@@ -1,0 +1,20 @@
+version: 2
+updates:
+- package-ecosystem: cargo
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: efivar
+    versions:
+    - "> 0.1.0, < 1"
+  - dependency-name: embed-resource
+    versions:
+    - 1.5.0
+    - 1.5.1
+    - 1.6.0
+    - 1.6.1
+  - dependency-name: byteorder
+    versions:
+    - 1.4.2
