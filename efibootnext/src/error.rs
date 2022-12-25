@@ -1,16 +1,31 @@
 //! Errors.
 
-use failure_derive::Fail;
-
-/// An error that is returned when the requested load option was not found.
-#[derive(Debug, Fail)]
-#[fail(display = "load option with number {:04X} does not exist", number)]
-pub struct NoSuchLoadOption {
-    /// Load option number.
-    pub number: u16,
+/// An error that can occur when reading load option.
+#[derive(Debug, thiserror::Error)]
+pub enum GetLoadOptionError {
+    /// Something went wrong at [`efivar`] level.
+    #[error("low-level error: {0}")]
+    Efivar(efivar::Error),
+    /// The `LoadOption` decoding has failed.
+    #[error("load option decoding error: {0}")]
+    LoadOptionDecoding(failure::Error),
 }
 
-/// An error that is returned when setting the `BootNext` to an invalid value.
-#[derive(Debug, Fail)]
-#[fail(display = "boot next value is not valid")]
-pub struct InvalidBootNextValue;
+/// An error that can occur when setting the boot next value.
+#[derive(Debug, thiserror::Error)]
+pub enum SetBootNextError {
+    /// Something went wrong at [`efivar`] level.
+    #[error("low-level error: {0}")]
+    Efivar(efivar::Error),
+}
+
+/// An error that can occur when setting the boot next value.
+#[derive(Debug, thiserror::Error)]
+pub enum GetBootNextError {
+    /// Something went wrong at [`efivar`] level.
+    #[error("low-level error: {0}")]
+    Efivar(efivar::Error),
+    /// The underlying value read is invalid.
+    #[error("boot next value is not valid")]
+    InvalidValue,
+}

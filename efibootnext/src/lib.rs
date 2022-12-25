@@ -7,11 +7,7 @@ mod load_option;
 mod load_option_iter;
 
 pub use adapter::Adapter;
-pub use failure::Error;
 pub use load_option::LoadOption;
-
-/// The result with a crate-specific [`Error`].
-pub type Result<T> = std::result::Result<T, Error>;
 
 #[cfg(feature = "expose_implementation_details")]
 pub mod implementation_details {
