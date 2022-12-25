@@ -18,14 +18,16 @@ impl Adapter {
     /// Get the load option under the number `num`.
     pub fn get_load_option(&mut self, num: u16) -> Result<LoadOption> {
         let var_name = format_load_option_name(num);
-        let full_var_name = efivar::efi::to_fullname(&var_name);
-        let (_flags, buf) = match map_result(self.var_manager.read(&full_var_name)) {
+        let full_var_name = efivar::efi::VariableName::new(&var_name);
+        let mut buf = make_var_read_buf();
+        let (buf, _flags) = match map_result(read_var(&*self.var_manager, &full_var_name, &mut buf))
+        {
             Err(err) => return Err(err)?,
             Ok(None) => return Err(NoSuchLoadOption { number: num })?,
             Ok(Some(v)) => v,
         };
 
-        let efiloadopt = EFILoadOpt::decode(&buf)?;
+        let efiloadopt = EFILoadOpt::decode(buf)?;
         Ok(LoadOption {
             number: num,
             description: efiloadopt.description,
@@ -40,7 +42,7 @@ impl Adapter {
 
     /// Set the `BootNext` variable value to `num`.
     pub fn set_boot_next(&mut self, num: u16) -> Result<()> {
-        let full_var_name = efivar::efi::to_fullname("BootNext");
+        let full_var_name = efivar::efi::VariableName::new("BootNext");
         self.var_manager.write(
             &full_var_name,
             VariableFlags::NON_VOLATILE
@@ -53,11 +55,13 @@ impl Adapter {
 
     /// Get the current `BootNext` variable value.
     pub fn get_boot_next(&mut self) -> Result<Option<u16>> {
-        let full_var_name = efivar::efi::to_fullname("BootNext");
-        let (_flags, buf) = match map_result(self.var_manager.read(&full_var_name))? {
-            None => return Ok(None),
-            Some(val) => val,
-        };
+        let full_var_name = efivar::efi::VariableName::new("BootNext");
+        let mut buf = make_var_read_buf();
+        let (buf, _flags) =
+            match map_result(read_var(&*self.var_manager, &full_var_name, &mut buf))? {
+                None => return Ok(None),
+                Some(val) => val,
+            };
         if buf.len() != 2 {
             return Err(InvalidBootNextValue)?;
         }
@@ -93,6 +97,22 @@ fn map_result<T>(result: efivar::Result<T>) -> Result<Option<T>> {
 /// Format the number as a load option name.
 fn format_load_option_name(num: u16) -> String {
     format!("Boot{:04X}", num)
+}
+
+/// A helper for reading an env var into a buffer.
+/// Can reuse the buffer for the extra efficiency.
+fn read_var<'b>(
+    reader: &dyn efivar::VarManager,
+    name: &efivar::efi::VariableName,
+    buf: &'b mut [u8],
+) -> std::result::Result<(&'b [u8], efivar::efi::VariableFlags), efivar::Error> {
+    let (n, flags) = reader.read(name, buf)?;
+    Ok((&buf[..n], flags))
+}
+
+/// Create a buffer for reading EFI variables with an opinionated size.
+fn make_var_read_buf() -> Vec<u8> {
+    vec![0u8; 20 * 1024] // should be enough
 }
 
 #[test]
