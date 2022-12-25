@@ -80,6 +80,12 @@ fn map_result<T>(result: efivar::Result<T>) -> Result<Option<T>> {
     match result {
         Ok(v) => Ok(Some(v)),
         Err(Error::VarNotFound { .. }) => Ok(None),
+        // The underlying API error handler is too specific, and Rust changed the API by introducing another "unknown"
+        // variant at the [`std::io::Error`]. The error we are looking for used to fall under the `Other` category,
+        // but now it goes into *undocumented* `Uncategorized`. Thus the check for the `kind == Other` is not erroneus!
+        // Core devs really have to be more careful with this.
+        #[cfg(windows)]
+        Err(Error::VarUnknownError { error, .. }) if error.raw_os_error() == Some(203) => Ok(None),
         Err(err) => Err(err)?,
     }
 }
