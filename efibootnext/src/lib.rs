@@ -10,16 +10,7 @@ pub use adapter::Adapter;
 pub use load_option::LoadOption;
 
 #[cfg(feature = "expose_implementation_details")]
-pub mod implementation_details {
-    //! We do not provide any interface stability guarantees to the
-    //! implementation details.
+pub use efivar;
 
-    pub use efivar;
-
-    use crate::Adapter;
-    impl Adapter {
-        pub fn from_var_manager(var_manager: Box<dyn efivar::VarManager>) -> Self {
-            Self { var_manager }
-        }
-    }
-}
+#[cfg(feature = "expose_implementation_details")]
+pub use efi_loadopt;

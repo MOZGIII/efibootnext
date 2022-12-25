@@ -71,6 +71,15 @@ impl Adapter {
         let result = u16::from_ne_bytes([buf[0], buf[1]]);
         Ok(Some(result))
     }
+
+    /// Create [`Self`] with a provided var manager.
+    ///
+    /// This is an escape hatch for cases where passing the var manager as-is is needed.
+    /// However, the var manager is an implementation detail.
+    #[cfg(feature = "expose_implementation_details")]
+    pub fn from_var_manager(var_manager: Box<dyn efivar::VarManager>) -> Self {
+        Self { var_manager }
+    }
 }
 
 impl Default for Adapter {
