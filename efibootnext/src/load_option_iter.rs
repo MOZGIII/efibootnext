@@ -1,9 +1,8 @@
 //! The load option iterator.
 
-use crate::error::NoSuchLoadOption;
+use crate::error::GetLoadOptionError;
 use crate::Adapter;
 use crate::LoadOption;
-use crate::Result;
 use std::iter::Iterator;
 
 /// The load option iterator.
@@ -21,7 +20,7 @@ impl<'a, I> Iterator for LoadOptionIter<'a, I>
 where
     I: Iterator<Item = u16>,
 {
-    type Item = Result<LoadOption>;
+    type Item = Result<LoadOption, GetLoadOptionError>;
 
     fn next(&mut self) -> Option<Self::Item> {
         loop {
@@ -30,14 +29,9 @@ where
                 Some(number) => number,
             };
             match self.adapter.get_load_option(number) {
-                Ok(load_option) => return Some(Ok(load_option)),
-                Err(err) => {
-                    if let Some(NoSuchLoadOption { .. }) = err.downcast_ref() {
-                        continue;
-                    } else {
-                        return Some(Err(err));
-                    }
-                }
+                Ok(Some(load_option)) => return Some(Ok(load_option)),
+                Ok(None) => continue, // skip to the next value
+                Err(err) => return Some(Err(err)),
             };
         }
     }

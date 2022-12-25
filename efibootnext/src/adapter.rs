@@ -1,10 +1,9 @@
 //! The platform specific implementation.
 
-use crate::error::{InvalidBootNextValue, NoSuchLoadOption};
+use crate::error::{GetBootNextError, GetLoadOptionError, SetBootNextError};
 use crate::heuristics_load_option_number_iter::HeuristicsLoadOptionNumberIter;
 use crate::load_option::LoadOption;
 use crate::load_option_iter::LoadOptionIter;
-use crate::Result;
 use efi_loadopt::EFILoadOpt;
 use efivar::{efi::VariableFlags, VarManager};
 
@@ -16,53 +15,70 @@ pub struct Adapter {
 
 impl Adapter {
     /// Get the load option under the number `num`.
-    pub fn get_load_option(&mut self, num: u16) -> Result<LoadOption> {
+    pub fn get_load_option(&mut self, num: u16) -> Result<Option<LoadOption>, GetLoadOptionError> {
         let var_name = format_load_option_name(num);
-        let full_var_name = efivar::efi::to_fullname(&var_name);
-        let (_flags, buf) = match map_result(self.var_manager.read(&full_var_name)) {
-            Err(err) => return Err(err)?,
-            Ok(None) => return Err(NoSuchLoadOption { number: num })?,
-            Ok(Some(v)) => v,
-        };
+        let full_var_name = efivar::efi::VariableName::new(&var_name);
+        let mut buf = make_var_read_buf();
+        let (buf, _flags) =
+            match map_into_option(read_var(&*self.var_manager, &full_var_name, &mut buf)) {
+                Err(err) => return Err(GetLoadOptionError::Efivar(err)),
+                Ok(None) => return Ok(None),
+                Ok(Some(v)) => v,
+            };
 
-        let efiloadopt = EFILoadOpt::decode(&buf)?;
-        Ok(LoadOption {
+        let efiloadopt = EFILoadOpt::decode(buf).map_err(GetLoadOptionError::LoadOptionDecoding)?;
+        Ok(Some(LoadOption {
             number: num,
             description: efiloadopt.description,
-        })
+        }))
     }
 
     /// Enumerate all the load options using the built-in heuristics.
-    pub fn load_options(&mut self) -> impl Iterator<Item = Result<LoadOption>> + '_ {
+    pub fn load_options(
+        &mut self,
+    ) -> impl Iterator<Item = Result<LoadOption, GetLoadOptionError>> + '_ {
         let number_iter = HeuristicsLoadOptionNumberIter::new();
         LoadOptionIter::with_number_iter(self, number_iter)
     }
 
     /// Set the `BootNext` variable value to `num`.
-    pub fn set_boot_next(&mut self, num: u16) -> Result<()> {
-        let full_var_name = efivar::efi::to_fullname("BootNext");
-        self.var_manager.write(
-            &full_var_name,
-            VariableFlags::NON_VOLATILE
-                | VariableFlags::BOOTSERVICE_ACCESS
-                | VariableFlags::RUNTIME_ACCESS,
-            &num.to_ne_bytes(),
-        )?;
+    pub fn set_boot_next(&mut self, num: u16) -> Result<(), SetBootNextError> {
+        let full_var_name = efivar::efi::VariableName::new("BootNext");
+        self.var_manager
+            .write(
+                &full_var_name,
+                VariableFlags::NON_VOLATILE
+                    | VariableFlags::BOOTSERVICE_ACCESS
+                    | VariableFlags::RUNTIME_ACCESS,
+                &num.to_ne_bytes(),
+            )
+            .map_err(SetBootNextError::Efivar)?;
         Ok(())
     }
 
     /// Get the current `BootNext` variable value.
-    pub fn get_boot_next(&mut self) -> Result<Option<u16>> {
-        let full_var_name = efivar::efi::to_fullname("BootNext");
-        let (_flags, buf) = match map_result(self.var_manager.read(&full_var_name))? {
+    pub fn get_boot_next(&mut self) -> Result<Option<u16>, GetBootNextError> {
+        let full_var_name = efivar::efi::VariableName::new("BootNext");
+        let mut buf = make_var_read_buf();
+        let result = map_into_option(read_var(&*self.var_manager, &full_var_name, &mut buf));
+        let (buf, _flags) = match result.map_err(GetBootNextError::Efivar)? {
             None => return Ok(None),
             Some(val) => val,
         };
         if buf.len() != 2 {
-            return Err(InvalidBootNextValue)?;
+            return Err(GetBootNextError::InvalidValue)?;
         }
         let result = u16::from_ne_bytes([buf[0], buf[1]]);
         Ok(Some(result))
+    }
+
+    /// Create [`Self`] with a provided var manager.
+    ///
+    /// This is an escape hatch for cases where passing the var manager as-is is needed.
+    /// However, the var manager is an implementation detail.
+    #[cfg(feature = "expose_implementation_details")]
+    pub fn from_var_manager(var_manager: Box<dyn efivar::VarManager>) -> Self {
+        Self { var_manager }
     }
 }
 
@@ -74,8 +90,9 @@ impl Default for Adapter {
     }
 }
 
-/// Map the EFI result into the crate error.
-fn map_result<T>(result: efivar::Result<T>) -> Result<Option<T>> {
+/// Map the `efivar::Result<T>` in such a way that the value becomes an option and `None` is returned
+/// for the "var not found" errors.
+fn map_into_option<T>(result: efivar::Result<T>) -> efivar::Result<Option<T>> {
     use efivar::Error;
     match result {
         Ok(v) => Ok(Some(v)),
@@ -93,6 +110,22 @@ fn map_result<T>(result: efivar::Result<T>) -> Result<Option<T>> {
 /// Format the number as a load option name.
 fn format_load_option_name(num: u16) -> String {
     format!("Boot{:04X}", num)
+}
+
+/// A helper for reading an env var into a buffer.
+/// Can reuse the buffer for the extra efficiency.
+fn read_var<'b>(
+    reader: &dyn efivar::VarManager,
+    name: &efivar::efi::VariableName,
+    buf: &'b mut [u8],
+) -> std::result::Result<(&'b [u8], efivar::efi::VariableFlags), efivar::Error> {
+    let (n, flags) = reader.read(name, buf)?;
+    Ok((&buf[..n], flags))
+}
+
+/// Create a buffer for reading EFI variables with an opinionated size.
+fn make_var_read_buf() -> Vec<u8> {
+    vec![0u8; 20 * 1024] // should be enough
 }
 
 #[test]

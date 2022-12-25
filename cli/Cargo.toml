@@ -15,7 +15,8 @@ name = "efibootnext"
 path = "src/main.rs"
 
 [dependencies]
-clap = "2.33"
+anyhow = "1"
+clap = { version = "4.0", features = ["derive", "env"] }
 efibootnext = { path = "../efibootnext" }
 
 [build-dependencies]
