@@ -2,7 +2,7 @@
 name = "efibootnext-cli"
 version = "0.1.2"
 authors = ["MOZGIII <mike-n@narod.ru>"]
-edition = "2018"
+edition = "2021"
 
 description = "A cli app for manipulating the BootNext UEFI variable and listing possible boot options"
 documentation = "https://docs.rs/efibootnext"
