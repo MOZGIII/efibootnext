@@ -9,8 +9,8 @@ pub struct LoadOption {
 impl LoadOption {
     pub fn new(number: u16, description: String) -> Self {
         Self {
-            number: number,
-            description: description,
+            number,
+            description,
         }
     }
 }
