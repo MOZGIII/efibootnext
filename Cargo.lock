@@ -111,7 +111,7 @@ dependencies = [
 
 [[package]]
 name = "efibootnext"
-version = "0.2.1"
+version = "0.3.0"
 dependencies = [
  "efi-loadopt",
  "efivar",
@@ -121,7 +121,7 @@ dependencies = [
 
 [[package]]
 name = "efibootnext-cli"
-version = "0.1.2"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "clap",
