@@ -1,6 +1,11 @@
-#[derive(Debug)]
+//! The format of the `BootNext` value.
+
+/// The format of the `BootNext` value.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum BootNextFormat {
+    /// The value is in hex number.
     Hex,
+    /// The value is in decimal numbers.
     Dec,
 }
 
@@ -26,6 +31,7 @@ impl std::str::FromStr for BootNextFormat {
 }
 
 impl BootNextFormat {
+    /// Radix of the underlying numeric format.
     pub fn radix(&self) -> u32 {
         match self {
             BootNextFormat::Hex => 16,
@@ -33,10 +39,12 @@ impl BootNextFormat {
         }
     }
 
+    /// Possible variants of the parse input.
     pub fn variants() -> &'static [&'static str] {
         &["hexadecimal", "hex", "h", "decimal", "dec", "d"]
     }
 
+    /// Parse the `BootNext` value using the format.
     pub fn parse_boot_next(
         &self,
         matches: &clap::ArgMatches<'_>,
@@ -48,8 +56,7 @@ impl BootNextFormat {
                 Err(_) => Err(clap::Error::value_validation_auto(format!(
                     "The argument '{}' isn't a valid {} value",
                     value, &self
-                ))
-                .into()),
+                ))),
             }
         } else {
             Err(::clap::Error::argument_not_found_auto(arg_name))

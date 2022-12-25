@@ -1,7 +1,12 @@
+//! The heuristic load option numbers iterator.
+
 use std::iter::Iterator;
 
+/// Heurisic load option numbers iterator.
 pub struct HeuristicsLoadOptionNumberIter {
+    /// The next value.
     next: u16,
+    /// Are there more items to come.
     more: bool,
 }
 
@@ -25,11 +30,12 @@ impl Iterator for HeuristicsLoadOptionNumberIter {
             };
         }
 
-        return Some(current);
+        Some(current)
     }
 }
 
 impl HeuristicsLoadOptionNumberIter {
+    /// Create a new [`Self`].
     pub fn new() -> Self {
         Self {
             next: 0,
