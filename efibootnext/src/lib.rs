@@ -1,4 +1,4 @@
-#![warn(rust_2018_idioms)]
+//! Manage EFI `BootNext` variable and inspect available boot options.
 
 mod adapter;
 pub mod error;
@@ -10,6 +10,7 @@ pub use adapter::Adapter;
 pub use failure::Error;
 pub use load_option::LoadOption;
 
+/// The result with a crate-specific [`Error`].
 pub type Result<T> = std::result::Result<T, Error>;
 
 #[cfg(feature = "expose_implementation_details")]

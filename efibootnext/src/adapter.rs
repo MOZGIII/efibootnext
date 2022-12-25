@@ -1,3 +1,5 @@
+//! The platform specific implementation.
+
 use crate::error::{InvalidBootNextValue, NoSuchLoadOption};
 use crate::heuristics_load_option_number_iter::HeuristicsLoadOptionNumberIter;
 use crate::load_option::LoadOption;
@@ -6,32 +8,40 @@ use crate::Result;
 use efi_loadopt::EFILoadOpt;
 use efivar::{efi::VariableFlags, VarManager};
 
+/// An interface to the OS-specific EFI implementation.
 pub struct Adapter {
+    /// The actual implementation.
     pub(crate) var_manager: Box<dyn VarManager>,
 }
 
 impl Adapter {
+    /// Get the load option under the number `num`.
     pub fn get_load_option(&mut self, num: u16) -> Result<LoadOption> {
         let var_name = format_load_option_name(num);
         let full_var_name = efivar::efi::to_fullname(&var_name);
         let (_flags, buf) = match map_result(self.var_manager.read(&full_var_name)) {
             Err(err) => return Err(err)?,
-            Ok(None) => return Err(NoSuchLoadOption::new(num))?,
+            Ok(None) => return Err(NoSuchLoadOption { number: num })?,
             Ok(Some(v)) => v,
         };
 
         let efiloadopt = EFILoadOpt::decode(&buf)?;
-        Ok(LoadOption::new(num, efiloadopt.description.to_owned()))
+        Ok(LoadOption {
+            number: num,
+            description: efiloadopt.description,
+        })
     }
 
+    /// Enumerate all the load options using the built-in heuristics.
     pub fn load_options(&mut self) -> impl Iterator<Item = Result<LoadOption>> + '_ {
         let number_iter = HeuristicsLoadOptionNumberIter::new();
         LoadOptionIter::with_number_iter(self, number_iter)
     }
 
+    /// Set the `BootNext` variable value to `num`.
     pub fn set_boot_next(&mut self, num: u16) -> Result<()> {
         let full_var_name = efivar::efi::to_fullname("BootNext");
-        let _ = self.var_manager.write(
+        self.var_manager.write(
             &full_var_name,
             VariableFlags::NON_VOLATILE
                 | VariableFlags::BOOTSERVICE_ACCESS
@@ -41,6 +51,7 @@ impl Adapter {
         Ok(())
     }
 
+    /// Get the current `BootNext` variable value.
     pub fn get_boot_next(&mut self) -> Result<Option<u16>> {
         let full_var_name = efivar::efi::to_fullname("BootNext");
         let (_flags, buf) = match map_result(self.var_manager.read(&full_var_name))? {
@@ -63,6 +74,7 @@ impl Default for Adapter {
     }
 }
 
+/// Map the EFI result into the crate error.
 fn map_result<T>(result: efivar::Result<T>) -> Result<Option<T>> {
     use efivar::Error;
     match result {
@@ -72,6 +84,7 @@ fn map_result<T>(result: efivar::Result<T>) -> Result<Option<T>> {
     }
 }
 
+/// Format the number as a load option name.
 fn format_load_option_name(num: u16) -> String {
     format!("Boot{:04X}", num)
 }

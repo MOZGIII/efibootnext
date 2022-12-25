@@ -1,4 +1,4 @@
-#![warn(rust_2018_idioms)]
+//! Command line interface for operations on the EFI `BootNext` variable.
 
 use clap::{crate_version, value_t_or_exit, App, AppSettings, Arg, SubCommand};
 use efibootnext::Adapter;
@@ -13,6 +13,7 @@ fn main() {
     }
 }
 
+/// Run the app and return the error.
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     let mut adapter = Adapter::default();
     let default_boot_next_format: &str = &format!("{}", BootNextFormat::Hex);
@@ -41,7 +42,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 .arg(
                     Arg::with_name("format")
                         .short("f")
-                        .possible_values(&BootNextFormat::variants())
+                        .possible_values(BootNextFormat::variants())
                         .default_value(default_boot_next_format)
                         .help("The format of the value"),
                 ),
@@ -70,7 +71,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 .parse_boot_next(submatches, "boot_next")
                 .unwrap_or_else(|e| e.exit());
 
-            let _ = adapter.set_boot_next(boot_next)?;
+            adapter.set_boot_next(boot_next)?;
 
             println!("{:04X}", boot_next);
             Ok(())
