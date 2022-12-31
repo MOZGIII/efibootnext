@@ -12,7 +12,7 @@ license = "MIT"
 
 [dependencies]
 efi-loadopt = "0.1"
-efivar = "0.2"
+efivar = "0.2.2"
 failure = "0.1"
 thiserror = "1"
 

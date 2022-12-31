@@ -131,9 +131,9 @@ dependencies = [
 
 [[package]]
 name = "efivar"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8e2f50293cdf2780f652e287e797f4992b984004cf01da289ae868cff4c75e0b"
+checksum = "3bb99b4fe904434469422a3494d2d7dc030ad8baf4f575547495e08ec838da6f"
 dependencies = [
  "bitflags",
  "byteorder",
