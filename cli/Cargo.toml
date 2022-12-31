@@ -1,6 +1,6 @@
 [package]
 name = "efibootnext-cli"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["MOZGIII <mike-n@narod.ru>"]
 edition = "2021"
 
