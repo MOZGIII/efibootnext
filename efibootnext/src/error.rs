@@ -6,7 +6,7 @@ pub use efivar::Error as EfivarError;
 
 /// An alias for the export.
 #[cfg(feature = "expose_implementation_details")]
-pub use failure::Error as LoadOptionDecodingError;
+pub use efi_loadopt::DecodeError as LoadOptionDecodingError;
 
 /// An error that can occur when reading load option.
 #[derive(Debug, thiserror::Error)]
