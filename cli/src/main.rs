@@ -53,7 +53,7 @@ fn run() -> Result<(), anyhow::Error> {
 
     match invocation.command {
         Command::List => {
-            for load_option_result in adapter.load_options() {
+            for load_option_result in adapter.load_options()? {
                 let load_option = load_option_result?;
                 println!("{:04X} {}", load_option.number, load_option.description);
             }

@@ -1,9 +1,11 @@
 //! The platform specific implementation.
 
-use crate::error::{GetBootNextError, GetLoadOptionError, SetBootNextError};
-use crate::heuristics_load_option_number_iter::HeuristicsLoadOptionNumberIter;
+use crate::error::{
+    EnumerateLoadOptionsError, GetBootNextError, GetLoadOptionError, SetBootNextError,
+};
 use crate::load_option::LoadOption;
 use crate::load_option_iter::LoadOptionIter;
+use crate::load_option_number_iter::LoadOptionNumberIter;
 use efi_loadopt::EFILoadOpt;
 use efivar::{efi::VariableFlags, VarManager};
 
@@ -15,7 +17,7 @@ pub struct Adapter {
 
 impl Adapter {
     /// Get the load option under the number `num`.
-    pub fn get_load_option(&mut self, num: u16) -> Result<Option<LoadOption>, GetLoadOptionError> {
+    pub fn get_load_option(&self, num: u16) -> Result<Option<LoadOption>, GetLoadOptionError> {
         let var_name = format_load_option_name(num);
         let full_var_name = efivar::efi::VariableName::new(&var_name);
         let mut buf = make_var_read_buf();
@@ -36,9 +38,13 @@ impl Adapter {
     /// Enumerate all the load options using the built-in heuristics.
     pub fn load_options(
         &mut self,
-    ) -> impl Iterator<Item = Result<LoadOption, GetLoadOptionError>> + '_ {
-        let number_iter = HeuristicsLoadOptionNumberIter::new();
-        LoadOptionIter::with_number_iter(self, number_iter)
+    ) -> Result<
+        impl Iterator<Item = Result<LoadOption, GetLoadOptionError>> + '_,
+        EnumerateLoadOptionsError,
+    > {
+        let number_iter = LoadOptionNumberIter::new(&*self.var_manager)
+            .map_err(EnumerateLoadOptionsError::Efivar)?;
+        Ok(LoadOptionIter::with_number_iter(self, number_iter))
     }
 
     /// Set the `BootNext` variable value to `num`.

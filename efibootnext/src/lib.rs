@@ -2,9 +2,9 @@
 
 mod adapter;
 pub mod error;
-mod heuristics_load_option_number_iter;
 mod load_option;
 mod load_option_iter;
+mod load_option_number_iter;
 
 pub use adapter::Adapter;
 pub use load_option::LoadOption;

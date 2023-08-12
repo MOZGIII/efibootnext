@@ -11,7 +11,7 @@ where
     I: Iterator<Item = u16>,
 {
     /// The adapter reference.
-    adapter: &'a mut Adapter,
+    adapter: &'a Adapter,
     /// The numeric iterator to go over the boot options.
     number_iter: I,
 }
@@ -42,7 +42,7 @@ where
     I: Iterator<Item = u16>,
 {
     /// Construct a new [`Self`] with the number iterator.
-    pub fn with_number_iter(adapter: &'a mut Adapter, number_iter: I) -> Self {
+    pub fn with_number_iter(adapter: &'a Adapter, number_iter: I) -> Self {
         Self {
             adapter,
             number_iter,

@@ -10,6 +10,14 @@ pub use efi_loadopt::DecodeError as LoadOptionDecodingError;
 
 /// An error that can occur when reading load option.
 #[derive(Debug, thiserror::Error)]
+pub enum EnumerateLoadOptionsError {
+    /// Something went wrong at [`efivar`] level.
+    #[error("low-level error: {0}")]
+    Efivar(efivar::Error),
+}
+
+/// An error that can occur when reading load option.
+#[derive(Debug, thiserror::Error)]
 pub enum GetLoadOptionError {
     /// Something went wrong at [`efivar`] level.
     #[error("low-level error: {0}")]
