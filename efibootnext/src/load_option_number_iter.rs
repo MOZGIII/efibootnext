@@ -1,14 +1,14 @@
-//! The [`efivar`] load option numbers iterator.
+//! The iterator providing the available load option numbers.
 
 use std::iter::Iterator;
 
-/// [`efivar`] load option numbers iterator.
-pub struct EfivarLoadOptionNumberIter<'a> {
+/// The iterator providing the available load option numbers.
+pub struct LoadOptionNumberIter<'a> {
     /// The inner iterator.
     pub inner: Box<dyn Iterator<Item = efivar::efi::VariableName> + 'a>,
 }
 
-impl<'a> Iterator for EfivarLoadOptionNumberIter<'a> {
+impl<'a> Iterator for LoadOptionNumberIter<'a> {
     type Item = u16;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -28,7 +28,7 @@ impl<'a> Iterator for EfivarLoadOptionNumberIter<'a> {
     }
 }
 
-impl<'a> EfivarLoadOptionNumberIter<'a> {
+impl<'a> LoadOptionNumberIter<'a> {
     /// Create a new [`Self`].
     pub fn new<VarManager>(var_manager: &'a VarManager) -> Result<Self, efivar::Error>
     where
