@@ -16,7 +16,7 @@ pub enum GetLoadOptionError {
     Efivar(efivar::Error),
     /// The `LoadOption` decoding has failed.
     #[error("load option decoding error: {0}")]
-    LoadOptionDecoding(failure::Error),
+    LoadOptionDecoding(efi_loadopt::DecodeError),
 }
 
 /// An error that can occur when setting the boot next value.

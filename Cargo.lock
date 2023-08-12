@@ -169,12 +169,12 @@ checksum = "acbf1af155f9b9ef647e42cdc158db4b64a1b61f743629225fde6f3e0be2a7c7"
 
 [[package]]
 name = "efi-loadopt"
-version = "0.1.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a2462a54e80a3aab33753ecf179b6b37d6f00e9eb1ab0d202bac889f78c0e276"
+checksum = "d4aee6d41d7f6ad011a08e15041f1d917361c0ca91ee03a9798b60d5c390fea3"
 dependencies = [
  "byteorder",
- "failure",
+ "thiserror",
 ]
 
 [[package]]
@@ -183,7 +183,6 @@ version = "0.3.1"
 dependencies = [
  "efi-loadopt",
  "efivar",
- "failure",
  "thiserror",
 ]
 
