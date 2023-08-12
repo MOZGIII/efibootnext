@@ -1,4 +1,6 @@
 {
   "editor.formatOnSave": true,
-  "rust-analyzer.checkOnSave.command": "clippy"
+  "rust-analyzer.check.command": "clippy",
+  "rust-analyzer.cargo.features": ["expose_implementation_details"],
+  "rust-analyzer.cargo.target": "x86_64-unknown-linux-gnu"
 }
