@@ -1,6 +1,7 @@
 //! Manage EFI `BootNext` variable and inspect available boot options.
 
 mod adapter;
+mod efivar_load_option_number_iter;
 pub mod error;
 mod heuristics_load_option_number_iter;
 mod load_option;
