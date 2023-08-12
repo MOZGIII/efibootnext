@@ -1,3 +1,3 @@
 [workspace]
 resolver = "2"
-members = ["efibootnext", "cli"]
+members = ["cli", "efibootnext"]
