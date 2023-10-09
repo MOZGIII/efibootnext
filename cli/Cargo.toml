@@ -20,4 +20,4 @@ clap = { version = "4.0", features = ["derive", "env"] }
 efibootnext = { version = "0.5", path = "../efibootnext" }
 
 [build-dependencies]
-embed-resource = "2.2"
+embed-resource = "2.4"
